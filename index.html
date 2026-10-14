@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f3ed">
+    <title>Paper Trails — Reading Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="site-header">
+        <a class="brand" href="#" aria-label="Paper Trails home">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span>Paper Trails</span>
+        </a>
+        <div class="header-actions">
+          <span class="header-note">A little space for your reading life</span>
+          <button id="theme-toggle" class="theme-toggle" type="button" aria-pressed="false">
+            <svg class="theme-moon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <path d="M16.2 12.5A7 7 0 0 1 7.5 3.8a7 7 0 1 0 8.7 8.7Z" />
+            </svg>
+            <svg class="theme-sun" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+              <circle cx="10" cy="10" r="3.5" />
+              <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.34 4.34l1.42 1.42m8.48 8.48 1.42 1.42m0-11.32-1.42 1.42m-8.48 8.48-1.42 1.42" />
+            </svg>
+            <span>Dark mode</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">YOUR PERSONAL LIBRARY</p>
+          <h1 id="page-title">Keep track of<br><span>every good read.</span></h1>
+          <p class="intro-copy">Save the books you want to read, keep up with what you're reading, and celebrate the ones you've finished.</p>
+        </div>
+        <div class="intro-art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="book-stack book-stack-back"></div>
+          <div class="book-stack book-stack-front"></div>
+          <div class="plant">✳</div>
+        </div>
+      </section>
+
+      <section class="tracker-layout" aria-label="Book tracker">
+        <aside class="form-panel">
+          <div class="panel-heading">
+            <span class="heading-icon" aria-hidden="true">＋</span>
+            <div>
+              <h2>Add a book</h2>
+              <p>Make room for your next story.</p>
+            </div>
+          </div>
+          <form id="book-form">
+            <label for="book-title">Book title</label>
+            <input id="book-title" name="title" type="text" maxlength="160" placeholder="e.g. The Secret Garden" required>
+
+            <label for="book-author">Author</label>
+            <input id="book-author" name="author" type="text" maxlength="120" placeholder="e.g. Frances Hodgson Burnett" required>
+
+            <label for="book-description">Description <span class="optional">(optional)</span></label>
+            <textarea id="book-description" class="description-input" name="description" maxlength="1200" rows="3" placeholder="Add a note or short description about this book..."></textarea>
+
+            <label for="book-status">Reading status</label>
+            <select id="book-status" name="status" required>
+              <option value="to-read">To read</option>
+              <option value="reading">Reading</option>
+              <option value="finished">Finished</option>
+            </select>
+
+            <fieldset id="book-cover-picker" class="cover-picker">
+              <legend>Cover image <span class="optional">(optional)</span></legend>
+              <div class="cover-options">
+                <label><input type="radio" name="book-cover-source" value="url" checked> Image URL</label>
+                <label><input type="radio" name="book-cover-source" value="device"> From device</label>
+              </div>
+              <div class="cover-choice" data-cover-choice="url">
+                <input class="cover-url" name="cover" type="url" placeholder="https://example.com/cover.jpg" aria-label="Cover image URL">
+                <span class="cover-hint">Use a direct link to an image file, not a webpage.</span>
+              </div>
+              <div class="cover-choice" data-cover-choice="device" hidden>
+                <input class="cover-file" name="coverFile" type="file" accept="image/*" aria-label="Choose cover image from device">
+              </div>
+            </fieldset>
+
+            <button class="primary-button" type="submit">Add to my shelf <span aria-hidden="true">↗</span></button>
+            <p id="form-message" class="form-message" role="status" aria-live="polite"></p>
+          </form>
+        </aside>
+
+        <section class="shelf-panel" aria-labelledby="shelf-title">
+          <div class="shelf-heading">
+            <div>
+              <p class="eyebrow">YOUR COLLECTION</p>
+              <h2 id="shelf-title">My bookshelf <span aria-hidden="true">✳</span></h2>
+            </div>
+            <label class="search-box">
+              <span class="sr-only">Search by title or author</span>
+              <span aria-hidden="true">⌕</span>
+              <input id="book-search" type="search" placeholder="Search books..." autocomplete="off">
+            </label>
+          </div>
+
+          <div class="shelf-controls">
+            <label class="control-field">
+              <span>Sort by</span>
+              <select id="book-sort">
+                <option value="recommended">Best match / newest</option>
+                <option value="newest">Newest first</option>
+                <option value="title-asc">Title: A–Z</option>
+                <option value="title-desc">Title: Z–A</option>
+                <option value="author-asc">Author: A–Z</option>
+                <option value="author-desc">Author: Z–A</option>
+              </select>
+            </label>
+            <label class="control-field">
+              <span>Filter by status</span>
+              <select id="book-filter">
+                <option value="all">All books</option>
+                <option value="to-read">To read</option>
+                <option value="reading">Reading</option>
+                <option value="finished">Finished</option>
+              </select>
+            </label>
+            <div class="view-toggle" role="group" aria-label="Book display style">
+              <button class="view-button" type="button" data-view="rows" aria-label="Show books in rows" title="Rows" aria-pressed="true">
+                <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                  <path d="M7.5 5h9M7.5 10h9M7.5 15h9M3.5 5h.1M3.5 10h.1M3.5 15h.1" />
+                </svg>
+              </button>
+              <button class="view-button" type="button" data-view="grid" aria-label="Show books in a grid" title="Grid" aria-pressed="false">
+                <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                  <rect x="3.5" y="3.5" width="5" height="5" rx=".7" />
+                  <rect x="11.5" y="3.5" width="5" height="5" rx=".7" />
+                  <rect x="3.5" y="11.5" width="5" height="5" rx=".7" />
+                  <rect x="11.5" y="11.5" width="5" height="5" rx=".7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="book-counts" aria-label="Book counts">
+            <span><strong id="count-to-read">0</strong> to read</span>
+            <span class="count-divider" aria-hidden="true"></span>
+            <span><strong id="count-reading">0</strong> reading</span>
+            <span class="count-divider" aria-hidden="true"></span>
+            <span><strong id="count-finished">0</strong> finished</span>
+          </div>
+
+          <nav id="pagination-top" class="pagination pagination-top" aria-label="Book list pages" hidden>
+            <button class="page-button" type="button" data-page-action="previous">Previous</button>
+            <span class="page-summary" aria-live="polite"></span>
+            <form class="page-jump" data-page-jump>
+              <label class="sr-only">Go to page</label>
+              <input class="page-input" type="number" min="1" step="1" inputmode="numeric" aria-label="Go to page">
+              <button class="page-button" type="submit">Go</button>
+            </form>
+            <button class="page-button" type="button" data-page-action="next">Next</button>
+          </nav>
+          <div id="book-list" class="book-list" aria-live="polite"></div>
+          <nav id="pagination" class="pagination" aria-label="Book list pages" hidden>
+            <button class="page-button" type="button" data-page-action="previous">Previous</button>
+            <span class="page-summary" aria-live="polite"></span>
+            <form class="page-jump" data-page-jump>
+              <label class="sr-only">Go to page</label>
+              <input class="page-input" type="number" min="1" step="1" inputmode="numeric" aria-label="Go to page">
+              <button class="page-button" type="submit">Go</button>
+            </form>
+            <button class="page-button" type="button" data-page-action="next">Next</button>
+          </nav>
+          <div id="empty-state" class="empty-state">
+            <span class="empty-icon" aria-hidden="true">▤</span>
+            <h3>Your shelf is waiting</h3>
+            <p>Add your first book and it will appear here.</p>
+          </div>
+          <p id="storage-error" class="storage-error" role="alert" hidden></p>
+        </section>
+      </section>
+
+      <footer class="site-footer">Made for the love of a good story <span aria-hidden="true">♥</span></footer>
+    </main>
+
+    <template id="book-template">
+      <article class="book-card" tabindex="0" role="button">
+        <div class="cover-wrap">
+          <img class="book-cover" alt="" hidden>
+          <div class="cover-placeholder" aria-hidden="true"><span>✳</span><small>PAPER TRAILS</small></div>
+          <p class="cover-error" hidden>Cover couldn't load. Check that the URL links directly to an image.</p>
+        </div>
+        <div class="book-info">
+          <div class="book-display">
+            <h3 class="book-title"></h3>
+            <p class="book-author"></p>
+            <div class="book-actions">
+              <label class="sr-only status-label">Reading status</label>
+              <select class="book-status" aria-label="Change reading status">
+                <option value="to-read">To read</option>
+                <option value="reading">Reading</option>
+                <option value="finished">Finished</option>
+              </select>
+              <button class="edit-button" type="button">Edit</button>
+              <button class="delete-button" type="button" aria-label="Delete book">Delete</button>
+            </div>
+          </div>
+          <form class="book-editor" hidden>
+            <label>Title <input class="edit-title" type="text" maxlength="160" required></label>
+            <label>Author <input class="edit-author" type="text" maxlength="120" required></label>
+            <label>Description <span class="optional">(optional)</span>
+              <textarea class="edit-description description-input" maxlength="1200" rows="3" placeholder="Add a note or short description about this book..."></textarea>
+            </label>
+            <fieldset class="cover-picker edit-cover-picker">
+              <legend>Cover image <span class="optional">(optional)</span></legend>
+              <div class="cover-options">
+                <label><input type="radio" value="url"> Image URL</label>
+                <label><input type="radio" value="device"> From device</label>
+              </div>
+              <div class="cover-choice" data-cover-choice="url">
+                <input class="cover-url edit-cover" type="url" placeholder="https://example.com/cover.jpg" aria-label="Cover image URL">
+                <span class="cover-hint">Use a direct link to an image file, not a webpage.</span>
+              </div>
+              <div class="cover-choice" data-cover-choice="device" hidden>
+                <input class="cover-file edit-cover-file" type="file" accept="image/*" aria-label="Choose cover image from device">
+              </div>
+            </fieldset>
+            <div class="editor-actions">
+              <button class="save-edit-button" type="submit">Save changes</button>
+              <button class="cancel-edit-button" type="button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </article>
+    </template>
+
+    <dialog id="book-details" class="book-dialog" aria-labelledby="detail-title">
+      <button class="dialog-close" type="button" aria-label="Close book details">×</button>
+      <div class="dialog-cover-wrap">
+        <img id="detail-cover" alt="" hidden>
+        <div id="detail-cover-placeholder" class="cover-placeholder" aria-hidden="true"><span>✳</span><small>PAPER TRAILS</small></div>
+      </div>
+      <div class="dialog-copy">
+        <p class="eyebrow">BOOK DETAILS</p>
+        <h2 id="detail-title"></h2>
+        <p id="detail-author" class="dialog-author"></p>
+        <p id="detail-description" class="dialog-description"></p>
+        <p class="dialog-meta"><strong>Reading status</strong><span id="detail-status"></span></p>
+        <p class="dialog-meta"><strong>Uploaded</strong><span id="detail-added"></span></p>
+        <p class="dialog-meta" id="detail-edited-row" hidden><strong>Last edited</strong><span id="detail-edited"></span></p>
+      </div>
+    </dialog>
+  </body>
+</html>
